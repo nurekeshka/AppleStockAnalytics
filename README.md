@@ -2,7 +2,11 @@
 
 This project is for analysing Apple's stock prices in the timeframe between 2023 to 2024 for University subject Big Data & Analytics
 
+## Matplotlib
+
 ![Compiled matplotlib figure example](./images/figure.png)
+
+## Plotly
 
 ![Compiled plotly figure example](./images/candle.png)
 

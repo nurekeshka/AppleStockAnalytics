@@ -1,4 +1,4 @@
-from typing import Callable, cast, get_args
+from typing import cast, get_args
 import sys
 
 from presentation import Presentation
@@ -7,13 +7,7 @@ from data import DataManager
 
 def present(type: Presentation.options):
     presentation = Presentation()
-
-    try:
-        visualization: Callable = (getattr(presentation, type))
-    except AttributeError:
-        print('Such a visualization doesn\'t exist.')
-
-    visualization()
+    presentation.visualize(type)
 
 
 def setup():

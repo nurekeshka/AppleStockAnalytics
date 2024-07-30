@@ -15,7 +15,7 @@ class Presentation():
         'prices', 'candles',
         'describe', 'averages',
         'daily_returns', 'cumulative_returns',
-        'volume', 'bollinger', 'rsi']
+        'volume', 'bollinger', 'rsi', 'volatility']
 
     mapping: Dict[str, Type[visualizations.AbstractVisualization]] = {
         'prices': visualizations.PriceFigureVisualization,
@@ -26,7 +26,8 @@ class Presentation():
         'cumulative_returns': visualizations.CumulativeReturnVisualization,
         'volume': visualizations.VolumeAnalysisVisualization,
         'bollinger': visualizations.BollingerBandsVisualization,
-        'rsi': visualizations.RelativeStrengthIndexVisualization}
+        'rsi': visualizations.RelativeStrengthIndexVisualization,
+        'volatility': visualizations.VolatilityAnalysis}
 
     manager: DataManager
 

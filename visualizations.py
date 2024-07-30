@@ -292,3 +292,26 @@ class DescribeVisualization(MatplotLibVisualization):
     def visualize(self) -> Tuple[Figure, Axes]:
         self.dataframe.describe()
         return self.plot()
+
+
+class VolatilityAnalysis(DailyReturnsVisualization):
+    context: str = '20-Day Rolling Volatility'
+    title: str = 'Apple Stock Volatility'
+
+    def visualize(self) -> Tuple[Figure, Axes]:
+        fig, ax = self.plot()
+        ax.plot(self.dataframe[self.columns.volatility.value],
+                label=self.context)
+        ax.set_title(self.title)
+        ax.set_xlabel(self.columns.date.value)
+        ax.set_ylabel(self.columns.volume.value)
+        ax.legend()
+        ax.grid(True)
+        return fig, ax
+
+    def clean(self, dataframe: pandas.DataFrame) -> pandas.DataFrame:
+        dataframe = super().clean(dataframe)
+        dataframe[self.columns.volatility.value] = dataframe[
+            self.columns.daily_return.value].rolling(window=20).std()
+
+        return dataframe

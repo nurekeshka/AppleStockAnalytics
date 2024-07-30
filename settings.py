@@ -44,3 +44,5 @@ class Columns(enum.StrEnum):
     daily_return = 'Daily_Return'
     cumulative = 'Cumulative_Return'
     rsi = 'RSI'
+
+    volatility = 'Volatility'

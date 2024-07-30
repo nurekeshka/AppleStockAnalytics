@@ -1,6 +1,7 @@
 import copy
 import pandas
 import matplotlib.pyplot as plt
+import plotly.graph_objects as go  # type: ignore
 
 from typing import Optional, Tuple
 from settings import Path, Columns
@@ -10,6 +11,8 @@ from data import DataManager
 class Presentation():
     paths = Path
     columns = Columns
+
+    options = ['matplotlib', 'plotly']
 
     manager: DataManager
 
@@ -24,7 +27,23 @@ class Presentation():
     def __init__(self) -> None:
         self.manager = DataManager()
 
-    def visualize(self) -> None:
+    def plotly(self) -> None:
+        fig = go.Figure(data=[
+            go.Candlestick(
+                x=self.dataframe.index,
+                open=self.dataframe[self.columns.open.value],
+                high=self.dataframe[self.columns.high.value],
+                low=self.dataframe[self.columns.low.value],
+                close=self.dataframe[self.columns.close.value],
+                name=self.context)])
+        fig.update_layout(
+            title=self.title,
+            xaxis_title=self.xlabel,
+            yaxis_title=self.ylabel,
+            xaxis_rangeslider_visible=False)
+        fig.show()
+
+    def matplotlib(self) -> None:
         plt.figure(figsize=self.size)
         plt.plot(self.dataframe[self.columns.close.value], label=self.context)
         plt.title(self.title)

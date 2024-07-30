@@ -10,33 +10,37 @@ This project is for analysing Apple's stock prices in the timeframe between 2023
 
 ![Compiled plotly figure example](./images/candles.png)
 
+## Data Description
+
+![Compiled plotly figure example](./images/describe.png)
+
 ## Moving Averages
 
-![Compiled plotly figure example](./images/averages.png)
+![Compiled matplotlib figure example](./images/averages.png)
 
 ## Daily Returns
 
-![Compiled plotly figure example](./images/daily_returns.png)
+![Compiled matplotlib figure example](./images/daily_returns.png)
 
 ## Volatility
 
-![Compiled plotly figure example](./images/volatility.png)
+![Compiled matplotlib figure example](./images/volatility.png)
 
 ## Cumulative Returns
 
-![Compiled plotly figure example](./images/cumulative_returns.png)
+![Compiled matplotlib figure example](./images/cumulative_returns.png)
 
 ## Volume Analysis
 
-![Compiled plotly figure example](./images/volume.png)
+![Compiled matplotlib figure example](./images/volume.png)
 
 ## Bollinger Bands
 
-![Compiled plotly figure example](./images/bollinger.png)
+![Compiled matplotlib figure example](./images/bollinger.png)
 
 ## Relative Strength Index (RSI)
 
-![Compiled plotly figure example](./images/rsi.png)
+![Compiled matplotlib figure example](./images/rsi.png)
 
 # Requirements
 Install PostgreSQL on you local machine or configure settings.py in a way that you will be able to connect to your database.

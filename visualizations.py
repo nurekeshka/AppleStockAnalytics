@@ -3,10 +3,10 @@ import copy
 import pandas
 
 import matplotlib.pyplot as plt
-from matplotlib.axes import Axes
-from matplotlib.figure import Figure
 import plotly.graph_objects as go  # type: ignore
 
+from matplotlib.axes import Axes
+from matplotlib.figure import Figure
 
 from typing import Tuple
 from settings import Columns
@@ -288,10 +288,35 @@ class RelativeStrengthIndexVisualization(MatplotLibVisualization):
         return rsi
 
 
-class DescribeVisualization(MatplotLibVisualization):
-    def visualize(self) -> Tuple[Figure, Axes]:
-        self.dataframe.describe()
-        return self.plot()
+class DescribeVisualization(PlotlyVisualization):
+    title: str = 'Summary Statistics Table'
+
+    def visualize(self) -> go.Figure:
+        desc = self.dataframe.describe().transpose()
+        desc = desc.round(3)
+        fig = go.Figure(data=[go.Table(
+            header=dict(
+                values=['Property'] + list(desc.columns),
+                fill_color='paleturquoise',
+                align='left',
+                height=30,
+                font_size=12
+            ),
+            cells=dict(
+                values=[desc.index] +
+                [desc[col].values for col in desc.columns],
+                fill_color='lavender',
+                align='left',
+                height=30,
+                font_size=12
+            )
+        )])
+
+        fig.update_layout(
+            title=self.title,
+            width=1200,
+            height=600)
+        return fig
 
 
 class VolatilityAnalysis(DailyReturnsVisualization):

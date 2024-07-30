@@ -30,3 +30,16 @@ class Columns(enum.StrEnum):
     close = 'Close'
     adjusted = 'Adj Close'
     volume = 'Volume'
+
+    twenty_days_sma = '20_Day_SMA'
+    fifty_days_sma = '50_Day_SMA'
+
+    twenty_days_std = '20_Day_STD'
+    fifty_days_std = '50_Day_STD'
+
+    upper_band = 'Upper_Band'
+    lower_band = 'Lower_Band'
+
+    daily_return = 'Daily_Return'
+    cumulative = 'Cumulative_Return'
+    rsi = 'RSI'

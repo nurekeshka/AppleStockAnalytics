@@ -101,8 +101,10 @@ class MovingAveragesVisualization(AbstractVisualization):
     def clean(self, dataframe: pandas.DataFrame) -> pandas.DataFrame:
         dataframe = super().clean(dataframe)
 
-        dataframe['20_Day_MA'] = dataframe['Close'].rolling(window=20).mean()
-        dataframe['50_Day_MA'] = dataframe['Close'].rolling(window=50).mean()
+        dataframe[self.columns.twenty_days_sma.value] = dataframe[
+            self.columns.close.value].rolling(window=20).mean()
+        dataframe[self.columns.fifty_days_sma.value] = dataframe[
+            self.columns.close.value].rolling(window=50).mean()
 
         return dataframe
 
@@ -166,7 +168,7 @@ class VolumeAnalysisVisualization(PriceFigureVisualization):
 
     def visualize(self) -> None:
         plt.figure(figsize=self.size)
-        plt.plot(self.dataframe[self.columns.value], label=self.context)
+        plt.plot(self.dataframe[self.columns.volume.value], label=self.context)
         plt.title(self.title)
         plt.xlabel(self.xlabel)
         plt.ylabel(self.columns.volume.value)

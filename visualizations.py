@@ -3,6 +3,8 @@ import copy
 import pandas
 
 import matplotlib.pyplot as plt
+from matplotlib.axes import Axes
+from matplotlib.figure import Figure
 import plotly.graph_objects as go  # type: ignore
 
 
@@ -17,8 +19,8 @@ class AbstractVisualization(abc.ABC):
     def __init__(self, dataframe: pandas.DataFrame) -> None:
         self.dataframe = self.clean(dataframe)
 
-    @ abc.abstractmethod
-    def visualize(self) -> None:
+    @abc.abstractmethod
+    def visualize(self) -> Tuple[Figure, Axes] | go.Figure:
         ''' Please include visualization logic here. '''
 
     def clean(self, dataframe: pandas.DataFrame) -> pandas.DataFrame:
@@ -26,22 +28,38 @@ class AbstractVisualization(abc.ABC):
         return copy.deepcopy(dataframe)
 
 
-class PriceFigureVisualization(AbstractVisualization):
+class MatplotLibVisualization(AbstractVisualization):
+    size: Tuple[int, int] = (10, 6)
+
+    @abc.abstractmethod
+    def visualize(self) -> Tuple[Figure, Axes]:
+        ''' Should return tuple with figure and axes. '''
+
+    def plot(self) -> Tuple[Figure, Axes]:
+        return plt.subplots(figsize=self.size)
+
+
+class PlotlyVisualization(AbstractVisualization):
+    @abc.abstractmethod
+    def visualize(self) -> go.Figure:
+        ''' You have to return go.Figure type. '''
+
+
+class PriceFigureVisualization(MatplotLibVisualization):
     title: str = 'Apple Stock Close Price'
     context: str = 'Close Price'
     xlabel: str = 'Date'
     ylabel: str = 'Close Price (USD)'
-    size: Tuple[int, int] = (10, 6)
 
-    def visualize(self) -> None:
-        plt.figure(figsize=self.size)
-        plt.plot(self.dataframe[self.columns.close.value], label=self.context)
-        plt.title(self.title)
-        plt.xlabel(self.xlabel)
-        plt.ylabel(self.ylabel)
-        plt.legend()
-        plt.grid(True)
-        plt.show()
+    def visualize(self) -> Tuple[Figure, Axes]:
+        fig, ax = self.plot()
+        ax.plot(self.dataframe[self.columns.close.value], label=self.context)
+        ax.set_title(self.title)
+        ax.set_xlabel(self.xlabel)
+        ax.set_ylabel(self.ylabel)
+        ax.legend()
+        ax.grid(True)
+        return fig, ax
 
     def clean(self, dataframe: pandas.DataFrame) -> pandas.DataFrame:
         dataframe = super().clean(dataframe)
@@ -53,8 +71,13 @@ class PriceFigureVisualization(AbstractVisualization):
         return dataframe
 
 
-class PriceCandleVisualization(PriceFigureVisualization):
-    def visualize(self) -> None:
+class PriceCandleVisualization(PlotlyVisualization):
+    title: str = 'Apple Stock Price'
+    context: str = 'Price'
+    xlabel: str = 'Date'
+    ylabel: str = 'Price (USD)'
+
+    def visualize(self) -> go.Figure:
         fig = go.Figure(data=[
             go.Candlestick(
                 x=self.dataframe.index,
@@ -68,10 +91,19 @@ class PriceCandleVisualization(PriceFigureVisualization):
             xaxis_title=self.xlabel,
             yaxis_title=self.ylabel,
             xaxis_rangeslider_visible=False)
-        fig.show()
+        return fig
+
+    def clean(self, dataframe: pandas.DataFrame) -> pandas.DataFrame:
+        dataframe = super().clean(dataframe)
+
+        dataframe[self.columns.date.value] = pandas.to_datetime(
+            dataframe[self.columns.date.value])
+        dataframe.set_index(self.columns.date.value, inplace=True)
+
+        return dataframe
 
 
-class MovingAveragesVisualization(AbstractVisualization):
+class MovingAveragesVisualization(MatplotLibVisualization):
     twenty_days_label: str = '20-Day SMA'
     fifty_days_label: str = '50-Day SMA'
 
@@ -79,24 +111,23 @@ class MovingAveragesVisualization(AbstractVisualization):
     title: str = 'Apple Stock Price with Moving Averages'
     xlabel: str = 'Date'
     ylabel: str = 'Price (USD)'
-    size: Tuple[int, int] = (10, 6)
 
-    def visualize(self) -> None:
-        plt.figure(figsize=self.size)
-        plt.plot(self.dataframe[self.columns.close.value], label=self.context)
-        plt.plot(
+    def visualize(self) -> Tuple[Figure, Axes]:
+        fig, ax = self.plot()
+        ax.plot(self.dataframe[self.columns.close.value], label=self.context)
+        ax.plot(
             self.dataframe[self.columns.twenty_days_sma.value],
             label=self.twenty_days_label)
-        plt.plot(
+        ax.plot(
             self.dataframe[self.columns.fifty_days_sma.value],
             label=self.fifty_days_label)
 
-        plt.title(self.title)
-        plt.xlabel(self.xlabel)
-        plt.ylabel(self.ylabel)
-        plt.legend()
-        plt.grid(True)
-        plt.show()
+        ax.set_title(self.title)
+        ax.set_xlabel(self.xlabel)
+        ax.set_ylabel(self.ylabel)
+        ax.legend()
+        ax.grid(True)
+        return fig, ax
 
     def clean(self, dataframe: pandas.DataFrame) -> pandas.DataFrame:
         dataframe = super().clean(dataframe)
@@ -109,24 +140,24 @@ class MovingAveragesVisualization(AbstractVisualization):
         return dataframe
 
 
-class DailyReturnsVisualization(AbstractVisualization):
+class DailyReturnsVisualization(MatplotLibVisualization):
     xlabel: str = 'Date'
     ylabel: str = Columns.daily_return.value
     title: str = 'Apple Stock Daily Returns'
     context: str = 'Daily Return'
-    size: Tuple[int, int] = (10, 6)
 
-    def visualize(self) -> None:
-        plt.figure(figsize=self.size)
-        plt.plot(
+    def visualize(self) -> Tuple[Figure, Axes]:
+        fig, ax = self.plot()
+        ax.plot(
             self.dataframe[self.columns.daily_return.value],
             label=self.context)
-        plt.title(self.title)
-        plt.xlabel(self.xlabel)
-        plt.ylabel(self.ylabel)
-        plt.legend()
-        plt.grid(True)
-        plt.show()
+        ax.set_title(self.title)
+        ax.set_xlabel(self.xlabel)
+        ax.set_ylabel(self.ylabel)
+        ax.legend()
+        ax.grid(True)
+
+        return fig, ax
 
     def clean(self, dataframe: pandas.DataFrame) -> pandas.DataFrame:
         dataframe = super().clean(dataframe)
@@ -141,17 +172,17 @@ class CumulativeReturnVisualization(DailyReturnsVisualization):
     context: str = 'Cumulative Return'
     title: str = 'Apple Stock Cumulative Returns'
 
-    def visualize(self) -> None:
-        plt.figure(figsize=self.size)
-        plt.plot(
+    def visualize(self) -> Tuple[Figure, Axes]:
+        fig, ax = self.plot()
+        ax.plot(
             self.dataframe[self.columns.cumulative.value],
             label=self.context)
-        plt.title(self.title)
-        plt.xlabel(self.xlabel)
-        plt.ylabel(self.context)
-        plt.legend()
-        plt.grid(True)
-        plt.show()
+        ax.set_title(self.title)
+        ax.set_xlabel(self.xlabel)
+        ax.set_ylabel(self.context)
+        ax.legend()
+        ax.grid(True)
+        return fig, ax
 
     def clean(self, dataframe: pandas.DataFrame) -> pandas.DataFrame:
         dataframe = super().clean(dataframe)
@@ -166,15 +197,15 @@ class VolumeAnalysisVisualization(PriceFigureVisualization):
     context: str = 'Volume'
     title: str = 'Apple Stock Trading Volume'
 
-    def visualize(self) -> None:
-        plt.figure(figsize=self.size)
-        plt.plot(self.dataframe[self.columns.volume.value], label=self.context)
-        plt.title(self.title)
-        plt.xlabel(self.xlabel)
-        plt.ylabel(self.columns.volume.value)
-        plt.legend()
-        plt.grid(True)
-        plt.show()
+    def visualize(self) -> Tuple[Figure, Axes]:
+        fig, ax = self.plot()
+        ax.plot(self.dataframe[self.columns.volume.value], label=self.context)
+        ax.set_title(self.title)
+        ax.set_xlabel(self.xlabel)
+        ax.set_ylabel(self.columns.volume.value)
+        ax.legend()
+        ax.grid(True)
+        return fig, ax
 
 
 class BollingerBandsVisualization(MovingAveragesVisualization):
@@ -182,24 +213,24 @@ class BollingerBandsVisualization(MovingAveragesVisualization):
     lower_band_label: str = 'Lower Bollinger Band'
     title: str = 'Apple Stock Price with Bollinger Bands'
 
-    def visualize(self) -> None:
-        plt.figure(figsize=(10, 6))
-        plt.plot(self.dataframe[self.columns.close.value], label=self.context)
-        plt.plot(
+    def visualize(self) -> Tuple[Figure, Axes]:
+        fig, ax = self.plot()
+        ax.plot(self.dataframe[self.columns.close.value], label=self.context)
+        ax.plot(
             self.dataframe[self.columns.twenty_days_sma],
             label=self.twenty_days_label)
-        plt.plot(
+        ax.plot(
             self.dataframe[self.columns.upper_band.value],
             label=self.upper_band_label)
-        plt.plot(
+        ax.plot(
             self.dataframe[self.columns.lower_band.value],
             label=self.lower_band_label)
-        plt.title(self.title)
-        plt.xlabel(self.xlabel)
-        plt.ylabel(self.ylabel)
-        plt.legend()
-        plt.grid(True)
-        plt.show()
+        ax.set_title(self.title)
+        ax.set_xlabel(self.xlabel)
+        ax.set_ylabel(self.ylabel)
+        ax.legend()
+        ax.grid(True)
+        return fig, ax
 
     def clean(self, dataframe: pandas.DataFrame) -> pandas.DataFrame:
         dataframe = super().clean(dataframe)
@@ -219,21 +250,21 @@ class BollingerBandsVisualization(MovingAveragesVisualization):
         return dataframe
 
 
-class RelativeStrengthIndexVisualization(AbstractVisualization):
-    size: Tuple[int, int] = (10, 6)
+class RelativeStrengthIndexVisualization(MatplotLibVisualization):
     title: str = 'Apple Stock RSI'
 
-    def visualize(self) -> None:
-        plt.figure(figsize=self.size)
-        plt.plot(
+    def visualize(self) -> Tuple[Figure, Axes]:
+        fig, ax = self.plot()
+        ax.plot(
             self.dataframe[self.columns.rsi.value],
             label=self.columns.rsi.value)
-        plt.title(self.title)
-        plt.xlabel(self.columns.date.value)
-        plt.ylabel(self.columns.rsi.value)
-        plt.legend()
-        plt.grid(True)
-        plt.show()
+        ax.set_title(self.title)
+        ax.set_xlabel(self.columns.date.value)
+        ax.set_ylabel(self.columns.rsi.value)
+        ax.legend()
+        ax.grid(True)
+
+        return fig, ax
 
     def clean(self, dataframe: pandas.DataFrame) -> pandas.DataFrame:
         dataframe = super().clean(dataframe)
@@ -257,6 +288,7 @@ class RelativeStrengthIndexVisualization(AbstractVisualization):
         return rsi
 
 
-class DescribeVisualization(AbstractVisualization):
-    def visualize(self) -> None:
-        print(self.dataframe.describe())
+class DescribeVisualization(MatplotLibVisualization):
+    def visualize(self) -> Tuple[Figure, Axes]:
+        self.dataframe.describe()
+        return self.plot()

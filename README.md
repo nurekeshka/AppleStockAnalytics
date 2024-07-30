@@ -2,6 +2,8 @@
 
 This project is for analysing Apple's stock prices in the timeframe between 2023 to 2024 for University subject Big Data & Analytics
 
+![Compiled figure example](./images/figure.png)
+
 # Requirements
 Install PostgreSQL on you local machine or configure settings.py in a way that you will be able to connect to your database.
 

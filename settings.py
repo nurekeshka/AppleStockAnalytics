@@ -20,6 +20,7 @@ class Data(enum.StrEnum):
 class Path(enum.StrEnum):
     directory = os.path.dirname(__file__)
     data = os.path.join(directory, 'data')
+    images = os.path.join(directory, 'images')
 
 
 class Columns(enum.StrEnum):

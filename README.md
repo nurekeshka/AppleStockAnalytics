@@ -18,6 +18,10 @@ This project is for analysing Apple's stock prices in the timeframe between 2023
 
 ![Compiled plotly figure example](./images/daily_returns.png)
 
+## Volatility
+
+![Compiled plotly figure example](./images/volatility.png)
+
 ## Cumulative Returns
 
 ![Compiled plotly figure example](./images/cumulative_returns.png)

@@ -44,4 +44,9 @@ Install PostgreSQL on you local machine or configure settings.py in a way that y
     python main.py setup
 
 ## How to run:
-    python main.py present
+    python main.py present <visualization>
+
+## All commands list:
+    python main.py setup
+    python main.py present <visualization>
+    python main.py save

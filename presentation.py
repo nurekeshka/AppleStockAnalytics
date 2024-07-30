@@ -1,8 +1,10 @@
-from typing import Tuple, Literal, Dict, Type
+from typing import Tuple, Literal, Dict, Type, get_args
 from settings import Path, Columns
 from data import DataManager
 
+import matplotlib.pyplot as plt
 import visualizations
+import os
 
 
 class Presentation():
@@ -38,10 +40,35 @@ class Presentation():
         self.manager = DataManager()
 
     def visualize(self, name: options) -> None:
+        visualization = self.get(name)
+
+        if isinstance(visualization, visualizations.MatplotLibVisualization):
+            visualization.visualize()
+            plt.show()
+        elif isinstance(visualization, visualizations.PlotlyVisualization):
+            fig = visualization.visualize()
+            fig.show()
+        elif visualization is None:
+            return
+        else:
+            raise TypeError('Unhandled type was returned.')
+
+    def save(self) -> None:
+        for name in get_args(self.options):
+            instance = self.get(name)
+            path = os.path.join(self.paths.images.value, f'{name}.png')
+
+            if isinstance(instance, visualizations.MatplotLibVisualization):
+                instance.visualize()
+                plt.savefig(path)
+            elif isinstance(instance, visualizations.PlotlyVisualization):
+                fig = instance.visualize()
+                fig.write_image(path)
+
+    def get(self, name: options) -> visualizations.AbstractVisualization:
         clazz = self.mapping.get(name)
 
         if clazz is None:
             raise ModuleNotFoundError('Visualization cannot be found.')
 
-        visualization = clazz(self.manager.dataframe)
-        visualization.visualize()
+        return clazz(self.manager.dataframe)

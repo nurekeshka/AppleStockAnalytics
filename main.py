@@ -15,6 +15,11 @@ def setup():
     manager.setup()
 
 
+def save():
+    presentation = Presentation()
+    presentation.save()
+
+
 def main():
     task = sys.argv[1] if len(sys.argv) > 1 else ''
 
@@ -27,6 +32,8 @@ def main():
                 return
 
             present(cast(Presentation.options, presentation))
+        case 'save':
+            save()
         case 'setup':
             setup()
         case _:

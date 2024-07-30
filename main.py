@@ -1,11 +1,11 @@
-from typing import Literal, Callable, cast
+from typing import Callable, cast, get_args
 import sys
 
 from presentation import Presentation
 from data import DataManager
 
 
-def present(type: Literal['matplotlib', 'plotly']):
+def present(type: Presentation.options):
     presentation = Presentation()
 
     try:
@@ -28,11 +28,11 @@ def main():
         case 'present':
             presentation = sys.argv[2] if len(sys.argv) > 2 else ''
 
-            if presentation not in Presentation.options:
+            if presentation not in get_args(Presentation.options):
                 print('Such a presentation doesn\'t exist.')
                 return
 
-            present(cast(Literal['matplotlib', 'plotly'], presentation))
+            present(cast(Presentation.options, presentation))
         case 'setup':
             setup()
         case _:

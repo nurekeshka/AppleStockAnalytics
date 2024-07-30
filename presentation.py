@@ -3,7 +3,7 @@ import pandas
 import matplotlib.pyplot as plt
 import plotly.graph_objects as go  # type: ignore
 
-from typing import Optional, Tuple
+from typing import Optional, Tuple, Literal
 from settings import Path, Columns
 from data import DataManager
 
@@ -12,7 +12,7 @@ class Presentation():
     paths = Path
     columns = Columns
 
-    options = ['matplotlib', 'plotly']
+    options = Literal['matplotlib', 'plotly', 'describe']
 
     manager: DataManager
 
